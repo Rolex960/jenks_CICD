@@ -1,14 +1,17 @@
 pipeline {
     agent any
+    enviroment{
+            PATH = "/opt/maven3/bin:$PATH"
+    }
     stages {
         stage('clone') {
             steps {
                 git branch: 'main', url: 'https://github.com/Rolex960/jenks_CICD'
             }
         }
-        stage('Build') {
+        stage('Maven Build') {
             steps {
-                echo 'Building...'
+                sh "mvn clean package"
             }
         }
     }
