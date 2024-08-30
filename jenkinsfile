@@ -1,6 +1,10 @@
 pipeline {
     agent any 
     stages {
+        stage('clone') {
+            steps {
+                'Gthub', url: 'https://github.com/Rolex960/jenks_CICD'
+            }
         stage('Build') {
             steps {
                 echo 'Building...'
