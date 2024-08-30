@@ -1,10 +1,10 @@
 pipeline {
-    agent any 
+    agent any
     stages {
         stage('clone') {
             steps {
-                git url: 'https://github.com/Rolex960/jenks_CICD'
-            } 
+                git branch: 'main', url: 'https://github.com/Rolex960/jenks_CICD'
+            }
         }
         stage('Build') {
             steps {
