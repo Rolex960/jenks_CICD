@@ -1,0 +1,56 @@
+---
+- name: Install Jenkins and ensure it is running
+  hosts: jenkins_servers  # Replace with your server group or hostname
+  become: yes  # Ensures commands are run as a superuser
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Java (OpenJDK 11)
+      apt:
+        name: openjdk-11-jdk
+        state: present
+
+    - name: Add Jenkins repository key
+      apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: 'deb http://pkg.jenkins.io/debian-stable binary/'
+        state: present
+
+    - name: Update apt cache after adding Jenkins repository
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Ensure Jenkins is running
+      uri:
+        url: http://localhost:8080
+        status_code: 200
+      register: jenkins_status
+      retries: 10
+      delay: 15
+      until: jenkins_status.status == 200
+
+    - name: Print Jenkins initial admin password
+      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_initial_password
+      ignore_errors: yes
+
+    - debug:
+        msg: "Jenkins initial admin password: {{ jenkins_initial_password.stdout }}"
